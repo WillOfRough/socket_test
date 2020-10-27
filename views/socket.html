@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const namespace = io.connect('http://localhost:8005/namespace');
+        // news라는 이벤트를 받을 시 콘솔에 data.hello를 출력
+        namespace.on('news', (data) => {
+            console.log(data.hello);
+            namespace.emit('close', {hello: "Someone disconnected at Namespace"});
+        });
+        namespace.on('chat', (data) => {
+            console.log(data.hello);
+            namespace.emit('close', {hello: "Someone disconnected at Namespace"});
+        });
+        namespace.on('joinRoom', (num,name,id) => {
+            console.log('join Room, num =' + num, ' ,name =' + name);
+            console.log('id : ' + id + '접속');
+        });
+        namespace.on('roomList', (client) => {
+            console.log(' client =' + client);
+        });
+
+
+        namespace.on('chat message', (num,name) => {
+            console.log('chat message, num =' + num, ' ,name =' + name);
+        });
+
+        function joinRoom(num,name){
+            console.log('try Room, num =' + num, ' ,name =' + name);
+            namespace.emit('joinRoom', num, name);
+        }
+        function roomList(num,name){
+            namespace.emit('roomList', num, name);
+        }
+        function leaveRoom(num,name,msg){
+            console.log('try chat room, num =' + num, ' ,name =' + name);
+            console.log('msg : '+msg);
+            namespace.emit('leaveRoom', num, name);
+        }
+    </script>
+</head>
+<body>
+<button onclick="joinRoom(0,'room1')">join room 1</button>
+<button onclick="leaveRoom(0,'room1')">leaveRoom 1</button>
+<button onclick="roomList(0,'room1')">roomList 1</button>
+
+
+
+<button onclick="joinRoom(1,'room2')">joinRoom 2</button>
+<button onclick="leaveRoom(1,'room2')">leaveRoom 2</button>
+<button onclick="roomList(1,'room2')">roomList 2</button>
+</body>
+</html>
